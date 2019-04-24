@@ -62,9 +62,10 @@ def send_all(l,sock1,sock2,msg):
             i.send(msg.encode("utf-8"))
 
 ##Function used to send a message to the clients in a given chanel
-def send_cnl(chan,msg):
+def send_cnl(chan,src,msg):
     for i in chan:
-        i.send(msg.encode("utf-8"))
+        if i!=src:
+            i.send(msg.encode("utf-8"))
         
 s = socket.socket()
 s.setsockopt(socket.SOL_SOCKET,socket.SO_REUSEADDR,1)
@@ -90,7 +91,7 @@ while 1<2:
                     given_nick=nick.partition(' ')[2].rstrip(' \n')
                     for k in lclt:
                         if lclt[k]==given_nick:
-                            news.send("Nickname already taken.\n")
+                            news.send("Nickname already taken.\n".encode("utf-8"))
                             break    
                     addrnews=given_nick
             lsock+=[news,]
@@ -111,7 +112,7 @@ while 1<2:
                     if len(join_cnl)!=0 and join_cnl not in lchan:
                         lchan[join_cnl]={}
                     lchan[join_cnl][news]=lclt[news]
-                    send_cnl(lchan[join_cnl],"JOIN {0} {1}\n".format(join_cnl,lclt[news]))
+                    send_cnl(lchan[join_cnl],i,"JOIN {0} {1}\n".format(join_cnl,lclt[news]))
         else:
             decmsg=i.recv(2042).decode("utf-8")
             ##Makes the client leave if he presses enter with no message
@@ -127,14 +128,14 @@ while 1<2:
                     break
             command, argument = decmsg.split(" ", 1)
             argument = argument.rstrip(' \n')
-            print(command)
-            print(argument)
+            ##print(command)
+            ##print(argument)
             ##Code for MSG feature: sending messages
             if command == "PRINT":
                 if argument!="":
                     for k in lchan:
                         if i in lchan[k]:
-                            send_cnl(lchan[k],argument)
+                            send_cnl(lchan[k],i,argument)
             elif command == "MSG":
                 chan_msg=decmsg.partition(' ')[2]
                 if chan_msg.startswith("all "):
@@ -143,7 +144,7 @@ while 1<2:
                     ##Extracting the channel name
                     chan=chan_msg.partition(' ')[0].rstrip(' \n')
                     if chan in lchan and i in lchan[chan]:
-                        send_cnl(lchan[chan],decmsg.lstrip('/'))
+                        send_cnl(lchan[chan],i,decmsg.lstrip('/'))
             ##Code for LIST feature: listing channels
             if command == "WHO":
                 for k in lchan:
@@ -171,12 +172,12 @@ while 1<2:
                 if join_cnl not in lchan:
                     lchan[join_cnl]={}
                 lchan[join_cnl][i]=lclt[i]
-                send_cnl(lchan[join_cnl],"JOIN {0} {1}\n".format(join_cnl,lclt[i]))
+                send_cnl(lchan[join_cnl],i,"JOIN {0} {1}\n".format(join_cnl,lclt[i]))
             ##Code for PART feature: leaving a channel
             if command == "PART":
                 part_cnl=argument
                 if part_cnl in lchan and i in lchan[part_cnl]:
-                    send_cnl(lchan[part_cnl],"PART {0} {1}\n".format(part_cnl,lclt[i]))
+                    send_cnl(lchan[part_cnl],i,"PART {0} {1}\n".format(part_cnl,lclt[i]))
                     lchan[part_cnl].pop(i)
             ##Code for KICK function: removing a client from a channel
             if command == "KICK":

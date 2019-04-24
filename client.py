@@ -106,7 +106,7 @@ while True:
 			l=r.readline()
 			if l[0]=='/':
 				l=l[1:]+" "
-				print(l)
+				##print(l)
 			else:
 				l="PRINT "+l
 			s.send(l.encode("utf-8"))

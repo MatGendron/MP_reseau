@@ -58,3 +58,11 @@ while True:
 Problèmes : 
 * Un seul client à la fois reçoit demande pour NICK
 * Message envoyé dans un channel est encore réimprimé chez la personne qui l'a envoyé, créant des doublons
+* Personne prenant un NICK déjà existant pas traité correctement
+
+
+### Suite
+
+Difficultés pour fix nick déjà utilisé essayé avec un booléen pour empêcher d'ajouter l'adresse à la liste des adresse, développé un peu la hâte, doit mieux y réfléchir, mis en attente pour le moment
+
+Quickfix en rajoutant une exception dans la fonction send_cnl pour qu'un message soit pas renvoyé à son émetteur
