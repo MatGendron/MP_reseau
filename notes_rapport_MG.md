@@ -66,3 +66,6 @@ Problèmes :
 Difficultés pour fix nick déjà utilisé essayé avec un booléen pour empêcher d'ajouter l'adresse à la liste des adresse, développé un peu la hâte, doit mieux y réfléchir, mis en attente pour le moment
 
 Quickfix en rajoutant une exception dans la fonction send_cnl pour qu'un message soit pas renvoyé à son émetteur
+
+### Fix commande
+Après avoir fait un rstrip sur la commande, tout fonctionne sauf si un client est en attente de connexion -> gros problème

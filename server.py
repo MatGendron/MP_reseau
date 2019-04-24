@@ -127,9 +127,10 @@ while 1<2:
                     send_all(lsock,s,i,leave_msg)
                     break
             command, argument = decmsg.split(" ", 1)
+            command=command.rstrip(' \n')
             argument = argument.rstrip(' \n')
-            ##print(command)
-            ##print(argument)
+            print(command)
+            print(argument)
             ##Code for MSG feature: sending messages
             if command == "PRINT":
                 if argument!="":
@@ -152,6 +153,7 @@ while 1<2:
                         for r in lchan[k]:
                             i.send("{0}\n".format(lchan[k][r]).encode("utf-8"))
             if command == "LIST":
+                print(command)
                 i.send("List of channels:\n".encode("utf-8"))
                 for k in lchan:
                     i.send("{0}\n".format(k).encode("utf-8"))
