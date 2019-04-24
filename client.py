@@ -94,24 +94,37 @@ liste = [s, sys.stdin]
 
 # Main loop
 while True:
-  reading, writing, exceptional = select.select(liste,[],[])
-  for r in liste:
+	reading, writing, exceptional = select.select(liste,[],[])
+	for r in reading:
+		if r in exceptional:
+			r.close()
+			exit()
+		if r!=sys.stdin:
+			d=r.recv(LIMIT).decode("utf-8")
+			print(d)
+		else:
+			l=r.readline()
+			if l[0]=='/':
+				l=l[1:]+" "
+				print(l)
+			else:
+				l="PRINT "+l
+			s.send(l.encode("utf-8"))
     ##problem: stdin ends up in reading and can't do a recv on it
-      if r in reading:
-        if r!=sys.stdin:
-          d = r.recv(LIMIT).decode("utf-8")
-          print(d)
-      if r in exceptional:
-        r.close()
-        exit()
-      if r == sys.stdin:
-        l = r.readline()
-        if l[0] == '/': #command
-            l = l[1:] + " "
-            print(l)
-        else:
-            l = "PRINT " + l
-        s.send(l.encode("utf-8"))
+    	##if r in exceptional:
+    	##	r.close()
+    	##	exit()
+    	##if r!=sys.stdin:
+    	##	d = r.recv(LIMIT).decode("utf-8")
+    	##	print(d)
+    	##else:
+    	##	l = r.readline()
+    	##    if l[0] == '/': #command
+    	##        l = l[1:] + " "
+    	##        print(l)
+    	##    else:
+    	##        l = "PRINT " + l
+    	##    s.send(l.encode("utf-8"))
 
 
 """
