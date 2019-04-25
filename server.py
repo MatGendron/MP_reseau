@@ -138,15 +138,15 @@ while 1<2:
                         if i in lchan[k]:
                             send_cnl(lchan[k],i,argument)
             elif command == "MSG":
-                nick_dest,msg=decmsg.split(' ',1)
+                nick_dest,msg=argument.split(' ',1)
                 sock_dest=0
                 for sock_clt in lclt:
-                    if lclt[sock_clt]=nick_dest
-                    sock_dest=sock_clt
-                    break
+                    if lclt[sock_clt]==nick_dest:
+                        sock_dest=sock_clt
+                        break
                 for k in lchan:
                     if i in lchan[k] and sock_dest in lchan[k]:
-                        sock_dest.send(msg.endode("utf-8"))
+                        sock_dest.send(msg.encode("utf-8"))
                         break
             ##Code for LIST feature: listing channels
             elif command == "WHO":

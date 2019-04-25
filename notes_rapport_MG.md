@@ -74,3 +74,7 @@ Après avoir fait un rstrip sur la commande, tout fonctionne sauf si un client e
 ## 25 avril
 
 Confirmation problème d'hier : si un client est en train de se connecter au serveur, les clients déjà connectés ne peuvent pas envoyer ou recevoir d'information du serveur. Entraîne envoit d'infos innatendues aux clients déjà connectés une fois que le client qui était en train de se connecter au serveur a finit (PRINT test_msg ayant était envoyé à un des clients)
+
+Idée pour résouble problème : sortir code pour demander nick et premier canal du if i==s.
+
+Fini de dev commande MSG, doit éventuellement rajouter nom de la source, faire plus de tests
