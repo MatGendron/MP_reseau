@@ -1,3 +1,4 @@
+## 23 avril
 ### Premier commit
 
 Problème pas tous qui s'affiche forcément côté client, besoin d'un retour à la ligne a plusieurs reprises
@@ -68,4 +69,6 @@ Difficultés pour fix nick déjà utilisé essayé avec un booléen pour empêch
 Quickfix en rajoutant une exception dans la fonction send_cnl pour qu'un message soit pas renvoyé à son émetteur
 
 ### Fix commande
-Après avoir fait un rstrip sur la commande, tout fonctionne sauf si un client est en attente de connexion -> gros problème
+Après avoir fait un rstrip sur la commande, tout fonctionne sauf si un client est en attente de connexion -> gros problème ?
+
+## 25 avril

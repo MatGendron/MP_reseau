@@ -129,8 +129,8 @@ while 1<2:
             command, argument = decmsg.split(" ", 1)
             command=command.rstrip(' \n')
             argument = argument.rstrip(' \n')
-            print(command)
-            print(argument)
+            ##print(command)
+            ##print(argument)
             ##Code for MSG feature: sending messages
             if command == "PRINT":
                 if argument!="":
@@ -147,18 +147,18 @@ while 1<2:
                     if chan in lchan and i in lchan[chan]:
                         send_cnl(lchan[chan],i,decmsg.lstrip('/'))
             ##Code for LIST feature: listing channels
-            if command == "WHO":
+            elif command == "WHO":
                 for k in lchan:
                     if i in lchan[k]:
                         for r in lchan[k]:
                             i.send("{0}\n".format(lchan[k][r]).encode("utf-8"))
-            if command == "LIST":
+            elif command == "LIST":
                 print(command)
                 i.send("List of channels:\n".encode("utf-8"))
                 for k in lchan:
                     i.send("{0}\n".format(k).encode("utf-8"))
             ##Code for KILL feature: removing a client from the chat
-            if command == "KILL":
+            elif command == "KILL":
                 kck_addr=argument
                 temp=0
                 for k in lclt:
@@ -169,20 +169,14 @@ while 1<2:
                         temp=k
                 lclt.pop(temp)
             ##Code for JOIN feature: joining a channel
-            if command == "JOIN":
+            elif command == "JOIN":
                 join_cnl=decmsg.partition(' ')[2].rstrip(' \n')
                 if join_cnl not in lchan:
                     lchan[join_cnl]={}
                 lchan[join_cnl][i]=lclt[i]
                 send_cnl(lchan[join_cnl],i,"JOIN {0} {1}\n".format(join_cnl,lclt[i]))
             ##Code for PART feature: leaving a channel
-            if command == "PART":
-                part_cnl=argument
-                if part_cnl in lchan and i in lchan[part_cnl]:
-                    send_cnl(lchan[part_cnl],i,"PART {0} {1}\n".format(part_cnl,lclt[i]))
-                    lchan[part_cnl].pop(i)
-            ##Code for KICK function: removing a client from a channel
-            if command == "KICK":
+            elif command == "KICK":
                 kick_arg=argument
                 kick_cnl=kick_arg.partition(' ')[0].rstrip(' \n')
                 kick_nck=kick_arg.partition(' ')[2].rstrip(' \n')
