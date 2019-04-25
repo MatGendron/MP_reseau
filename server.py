@@ -157,11 +157,14 @@ while 1<2:
                         lclt[i]=argument
             ##Code for JOIN feature: joining a channel
             elif command == "JOIN":
-                if argument != "":
-                    if argument not in lchan:
-                        lchan[argument]={}
-                    lchan[argument][i]=lclt[i]
-                    send_cnl(lchan[argument],i,"JOIN {0} {1}\n".format(argument,lclt[i]))
+                if lclt[i]=="*Nick_pending*":
+                    i.send("Choose a nickname before joining a channel\n".encode("utf-8"))
+                else:
+                    if argument != "":
+                        if argument not in lchan:
+                            lchan[argument]={}
+                        lchan[argument][i]=lclt[i]
+                        send_cnl(lchan[argument],i,"JOIN {0} {1}\n".format(argument,lclt[i]))
             elif command == "KILL":
                 kck_addr=argument
                 temp=0
