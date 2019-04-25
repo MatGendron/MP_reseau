@@ -122,8 +122,13 @@ while 1<2:
             elif command == "WHO":
                 for k in lchan:
                     if i in lchan[k]:
+                        lcnlid=list(lchan[k])
+                        admin=lcnlid[len(lcnlid)-1]
                         for r in lchan[k]:
-                            i.send("{0}\n".format(lchan[k][r]).encode("utf-8"))
+                            if r==admin:
+                                i.send("@{0}@\n".format(lchan[k][r]).encode("utf-8"))
+                            else:
+                                i.send("{0}\n".format(lchan[k][r]).encode("utf-8"))
             elif command == "LIST":
                 print(command)
                 i.send("List of channels:\n".encode("utf-8"))

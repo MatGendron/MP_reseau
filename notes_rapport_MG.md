@@ -114,3 +114,8 @@ Aucun problème lors de leur implémentation
 Ajout fonction permettant de vérifier si une socket est dans n'importe quel canal -> petit problème parce qu'utilise liste channel directement dans cette fonction et code était pas tout de suite dans le bon ordre pour le permettre.
 
 Ajout identifiant (nick) au début des messages textuels.
+
+### Système d'admin:
+Peut utiliser list(d) pour obtenir la liste des clés d'un dictionnaire par ordre d'insertion
+
+Problème sur NICK pour admin au début parce que savait pas dans quel ordre était stocké nouveaux utilisateurs dans dict d'un channel
