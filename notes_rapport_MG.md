@@ -78,3 +78,26 @@ Confirmation problème d'hier : si un client est en train de se connecter au ser
 Idée pour résouble problème : sortir code pour demander nick et premier canal du if i==s.
 
 Fini de dev commande MSG, doit éventuellement rajouter nom de la source, faire plus de tests
+* MSG pas envoyé à quelqu'un autre canal OK
+
+### Implémentation commande MSG 
+Passé problème à la compilation due à réutilisation de code précédent, pas de problème pour dev cette fonction
+
+### Fix serveur peut pas traiter autres client si en client est en train de se connecter
+
+Déplacement du code pour demander un NICK et rejoindre un channel hors du if i==s côté serveur, petits problèmes dut à réutilisation de code mais sans plus
+
+### Fix NICK déjà prit
+Pour une raison que j'ignore,
+```python
+if argument in lclt:
+```
+argument étant le NICK donné par l'utilisateur et lclt un dictionnaire dont les clés sont les sockets et les valeurs les nick ne fonctionnait pas pour déterminer si un un nick était déjà utilisé par un client, ai du faire
+```python
+bad_nick=False
+for clt in lclt:
+  if argument==lclt[clt]:
+    bad_nick=True
+    break
+if bad_nick:
+```

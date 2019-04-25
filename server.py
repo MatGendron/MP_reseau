@@ -82,37 +82,10 @@ while 1<2:
     for i in reading:
         if i==s:
             news,addrnews=i.accept()
-            #Prompt for a nickname, asks for a proper nickname as long as it's not given.
-            temp=addrnews
-            while addrnews==temp:
-                news.send("Specify nickname with /NICK command.\n".encode("utf-8"))
-                nick=news.recv(LIMIT).decode("utf-8")
-                if nick[:5]==("NICK "):
-                    given_nick=nick.partition(' ')[2].rstrip(' \n')
-                    for k in lclt:
-                        if lclt[k]==given_nick:
-                            news.send("Nickname already taken.\n".encode("utf-8"))
-                            break    
-                    addrnews=given_nick
             lsock+=[news,]
-            lclt[news]=addrnews
-            news.send("List of channels:\n".encode("utf-8"))
-            if len(lchan)!=0:
-                for k in lchan:
-                    news.send("{0}\n".format(k).encode("utf-8"))
-            else:
-                news.send("*No channels*\n".encode("utf-8"))
-            news.send("Use /LIST command to display this list again.\nJoin a channel with /JOIN <channel_name> command before continuing.\n".encode("utf-8"))
+            lclt[news]="*Nick_pending*"
+            news.send("Specify nickname with /NICK command.\n".encode("utf-8"))
             ##Prompts for a channel to join, asks again until a valid channel name is given.
-            join_cnl=""
-            while len(join_cnl)==0:
-                join_cmd=news.recv(LIMIT).decode("utf-8")
-                if join_cmd[:5]=="JOIN ":
-                    join_cnl=join_cmd.partition(' ')[2].rstrip(' \n')
-                    if len(join_cnl)!=0 and join_cnl not in lchan:
-                        lchan[join_cnl]={}
-                    lchan[join_cnl][news]=lclt[news]
-                    send_cnl(lchan[join_cnl],i,"JOIN {0} {1}\n".format(join_cnl,lclt[news]))
         else:
             decmsg=i.recv(2042).decode("utf-8")
             ##Makes the client leave if he presses enter with no message
@@ -160,6 +133,35 @@ while 1<2:
                 for k in lchan:
                     i.send("{0}\n".format(k).encode("utf-8"))
             ##Code for KILL feature: removing a client from the chat
+            elif command == "NICK":
+                if argument != "":
+                    bad_nick=False
+                    for clt in lclt:
+                        if argument==lclt[clt]:
+                            bad_nick=True
+                            break
+                    if bad_nick:
+                        i.send("Nickname already taken.\n".encode("utf-8"))
+                    else:
+                        if lclt[i]=="*Nick_pending*":
+                            i.send("List of channels:\n".encode("utf-8"))
+                            if len(lchan)!=0:
+                                for k in lchan:
+                                    i.send("{0}\n".format(k).encode("utf-8"))
+                            else:
+                                i.send("*No channels*\n".encode("utf-8"))
+                                i.send("Use /LIST command to display this list again.\nJoin a channel with /JOIN <channel_name> command before continuing.\n".encode("utf-8"))
+                        for chan in lchan:
+                            if i in lchan[chan]:
+                                lchan[chan][i]=argument
+                        lclt[i]=argument
+            ##Code for JOIN feature: joining a channel
+            elif command == "JOIN":
+                if argument != "":
+                    if argument not in lchan:
+                        lchan[argument]={}
+                    lchan[argument][i]=lclt[i]
+                    send_cnl(lchan[argument],i,"JOIN {0} {1}\n".format(argument,lclt[i]))
             elif command == "KILL":
                 kck_addr=argument
                 temp=0
@@ -170,13 +172,6 @@ while 1<2:
                         lsock.remove(k)
                         temp=k
                 lclt.pop(temp)
-            ##Code for JOIN feature: joining a channel
-            elif command == "JOIN":
-                join_cnl=decmsg.partition(' ')[2].rstrip(' \n')
-                if join_cnl not in lchan:
-                    lchan[join_cnl]={}
-                lchan[join_cnl][i]=lclt[i]
-                send_cnl(lchan[join_cnl],i,"JOIN {0} {1}\n".format(join_cnl,lclt[i]))
             ##Code for PART feature: leaving a channel
             elif command == "KICK":
                 kick_arg=argument
