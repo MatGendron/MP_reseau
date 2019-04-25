@@ -101,3 +101,6 @@ for clt in lclt:
     break
 if bad_nick:
 ```
+
+### Quickfix 
+Ligne pour dire d'utiliser commande list pour afficher canaux et demande de rejoindre un canal s'affichait pas si canaux déjà existans, ligne de code correspondante était mal indentée 

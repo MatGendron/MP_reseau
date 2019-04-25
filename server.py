@@ -150,7 +150,7 @@ while 1<2:
                                     i.send("{0}\n".format(k).encode("utf-8"))
                             else:
                                 i.send("*No channels*\n".encode("utf-8"))
-                                i.send("Use /LIST command to display this list again.\nJoin a channel with /JOIN <channel_name> command before continuing.\n".encode("utf-8"))
+                            i.send("Use /LIST command to display this list again.\nJoin a channel with /JOIN <channel_name> command before continuing.\n".encode("utf-8"))
                         for chan in lchan:
                             if i in lchan[chan]:
                                 lchan[chan][i]=argument
