@@ -72,3 +72,5 @@ Quickfix en rajoutant une exception dans la fonction send_cnl pour qu'un message
 Après avoir fait un rstrip sur la commande, tout fonctionne sauf si un client est en attente de connexion -> gros problème ?
 
 ## 25 avril
+
+Confirmation problème d'hier : si un client est en train de se connecter au serveur, les clients déjà connectés ne peuvent pas envoyer ou recevoir d'information du serveur. Entraîne envoit d'infos innatendues aux clients déjà connectés une fois que le client qui était en train de se connecter au serveur a finit (PRINT test_msg ayant était envoyé à un des clients)
