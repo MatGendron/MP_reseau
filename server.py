@@ -54,19 +54,6 @@ for i in range(1,argc):
 # CODE #
 ########
 
-##Function used to send a message to all clients, sock1 is used as an exception to avoid broken pipe error, sock2 is used
-##to make an exception for another socket if needed.
-def send_all(l,sock1,sock2,msg):
-    for i in l:
-        if i!=sock1 and i!=sock2:
-            i.send(msg.encode("utf-8"))
-
-##Function used to send a message to the clients in a given chanel
-def send_cnl(chan,src,msg):
-    for i in chan:
-        if i!=src:
-            i.send(msg.encode("utf-8"))
-        
 s = socket.socket()
 s.setsockopt(socket.SOL_SOCKET,socket.SO_REUSEADDR,1)
 s.bind(('',1459))
@@ -77,6 +64,27 @@ lsock=[s]
 lchan={}
 ##Dictionnary of all clients
 lclt={}
+
+##Function used to send a message to all clients, sock1 is used as an exception to avoid broken pipe error, sock2 is used
+##to make an exception for another socket if needed.
+def send_all(l,sock1,sock2,msg):
+    for i in l:
+        if i!=sock1 and i!=sock2:
+            i.send(msg.encode("utf-8"))
+
+##Function used to send a message to the clients in a given channel
+def send_cnl(chan,src,msg):
+    for i in chan:
+        if i!=src:
+            i.send(msg.encode("utf-8"))
+
+##Function that checks whether the given socket is in a channel
+def in_a_cnl(sock):
+    for chan in lchan:
+        if sock in lchan[chan]:
+            return True
+    return False
+        
 while 1<2:
     reading,writing,exceptional=select.select(lsock,[],lsock)
     for i in reading:
@@ -88,17 +96,6 @@ while 1<2:
             ##Prompts for a channel to join, asks again until a valid channel name is given.
         else:
             decmsg=i.recv(2042).decode("utf-8")
-            ##Makes the client leave if he presses enter with no message
-            if len(decmsg)<=1:
-                    leave_addr=""
-                    leave_msg="PART {0}\n".format(lclt[i])
-                    i.close()
-                    lsock.remove(i)
-                    lclt.pop(i)
-                    for k in lchan:
-                        lchan[k].pop(i)
-                    send_all(lsock,s,i,leave_msg)
-                    break
             command, argument = decmsg.split(" ", 1)
             command=command.rstrip(' \n')
             argument = argument.rstrip(' \n')
@@ -165,6 +162,21 @@ while 1<2:
                             lchan[argument]={}
                         lchan[argument][i]=lclt[i]
                         send_cnl(lchan[argument],i,"JOIN {0} {1}\n".format(argument,lclt[i]))
+            elif command == "LEAVE":
+                for k in lchan:
+                    if i in lchan[k]:
+                        lchan[k].pop(i)
+                        break
+                i.send("Use /JOIN command to join another channel or /BYE command to disconnect from the server.\n".encode("utf-8"))
+            elif command == "BYE":
+                if in_a_cnl(i):
+                    i.send("Use /LEAVE command to leave your current channel before disconnecting from the server.\n")
+                else:
+                    leave_msg="BYE {0}!\n".format(lclt[i])
+                    i.close()
+                    lsock.remove(i)
+                    lclt.pop(i)
+                    send_all(lsock,s,i,leave_msg)
             elif command == "KILL":
                 kck_addr=argument
                 temp=0

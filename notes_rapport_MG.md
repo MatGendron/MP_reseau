@@ -106,3 +106,9 @@ if bad_nick:
 Ligne pour dire d'utiliser commande list pour afficher canaux et demande de rejoindre un canal s'affichait pas si canaux déjà existans, ligne de code correspondante était mal indentée 
 
 Ajout code pour empêcher de join un Chan avant d'avoir choisit un nick
+
+### Leave et Bye
+
+Aucun problème lors de leur implémentation
+
+Ajout fonction permettant de vérifier si une socket est dans n'importe quel canal -> petit problème parce qu'utilise liste channel directement dans cette fonction et code était pas tout de suite dans le bon ordre pour le permettre.
