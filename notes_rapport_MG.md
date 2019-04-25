@@ -112,3 +112,5 @@ Ajout code pour empêcher de join un Chan avant d'avoir choisit un nick
 Aucun problème lors de leur implémentation
 
 Ajout fonction permettant de vérifier si une socket est dans n'importe quel canal -> petit problème parce qu'utilise liste channel directement dans cette fonction et code était pas tout de suite dans le bon ordre pour le permettre.
+
+Ajout identifiant (nick) au début des messages textuels.
