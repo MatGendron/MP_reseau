@@ -101,7 +101,7 @@ while 1<2:
             news,addrnews=i.accept()
             lsock+=[news,]
             lclt[news]="*Nick_pending*"
-            news.send("Specify nickname with /NICK command.\n".encode("utf-8"))
+            ##news.send("Specify nickname with /NICK command.\n".encode("utf-8"))
         else:
             decmsg=i.recv(2042).decode("utf-8")
             command, argument = decmsg.split(" ", 1)
@@ -140,12 +140,12 @@ while 1<2:
                                 i.send("{0}\n".format(lchan[k][r]).encode("utf-8"))
             ##Code for LIST feature: displaying the list of channels
             elif command == "LIST":
-                i.send("List of channels:\n".encode("utf-8"))
+                ##i.send("List of channels:\n".encode("utf-8"))
                 if len(lchan)!=0:
                     for k in lchan:
                         i.send("{0}\n".format(k).encode("utf-8"))
-                else:
-                    i.send("*No channels*\n".encode("utf-8"))
+                ##else:
+                ##    i.send("*No channels*\n".encode("utf-8"))
             ##Code for NICK feature: choosing a name for a client
             elif command == "NICK":
                 if argument != "":
@@ -155,16 +155,18 @@ while 1<2:
                             bad_nick=True
                             break
                     if bad_nick:
-                        i.send("Nickname already taken.\n".encode("utf-8"))
+                        break
+                    ##    i.send("Nickname already taken.\n".encode("utf-8"))
                     else:
                         if lclt[i]=="*Nick_pending*":
-                            i.send("List of channels:\n".encode("utf-8"))
+                            ##i.send("List of channels:\n".encode("utf-8"))
                             if len(lchan)!=0:
                                 for k in lchan:
                                     i.send("{0}\n".format(k).encode("utf-8"))
                             else:
-                                i.send("*No channels*\n".encode("utf-8"))
-                            i.send("Use /LIST command to display this list again.\nJoin a channel with /JOIN <channel_name> command before continuing.\nUse /HELP to display a list of commands.\n".encode("utf-8"))
+                                break
+                                ##i.send("*No channels*\n".encode("utf-8"))
+                            ##i.send("Use /LIST command to display this list again.\nJoin a channel with /JOIN <channel_name> command before continuing.\nUse /HELP to display a list of commands.\n".encode("utf-8"))
                         for chan in lchan:
                             if i in lchan[chan]:
                                 lchan[chan][i]=argument
@@ -172,7 +174,8 @@ while 1<2:
             ##Code for JOIN feature: joining a channel
             elif command == "JOIN":
                 if lclt[i]=="*Nick_pending*":
-                    i.send("Choose a nickname before joining a channel\n".encode("utf-8"))
+                    break
+                    ##i.send("Choose a nickname before joining a channel\n".encode("utf-8"))
                 else:
                     if argument != "":
                         if argument not in lchan:
@@ -180,7 +183,7 @@ while 1<2:
                             ladmin[argument]=[]
                         lchan[argument][i]=lclt[i]
                         ladmin[argument].append(i)
-                        send_cnl(lchan[argument],i,"JOIN {0} {1}\n".format(argument,lclt[i]))
+                        ##send_cnl(lchan[argument],i,"JOIN {0} {1}\n".format(argument,lclt[i]))
             ##Code fo LEAVE feature: leaving a channel
             elif command == "LEAVE":
                 for k in lchan:
@@ -190,17 +193,18 @@ while 1<2:
                         if len(ladmin[k])==0:
                             lchan.pop(k)
                         break
-                i.send("Use /JOIN command to join another channel or /BYE command to disconnect from the server.\n".encode("utf-8"))
+                ##i.send("Use /JOIN command to join another channel or /BYE command to disconnect from the server.\n".encode("utf-8"))
             ##Code for BUY feature: disconnecting from the server.
             elif command == "BYE":
                 if in_a_cnl(i):
-                    i.send("Use /LEAVE command to leave your current channel before disconnecting from the server.\n")
+                    break
+                    ##i.send("Use /LEAVE command to leave your current channel before disconnecting from the server.\n")
                 else:
-                    leave_msg="BYE {0}!\n".format(lclt[i])
+                    ##leave_msg="BYE {0}!\n".format(lclt[i])
                     i.close()
                     lsock.remove(i)
                     lclt.pop(i)
-                    send_all(lsock,s,i,leave_msg)
+                    ##send_all(lsock,s,i,leave_msg)
             ##Code for KICK feature: forcibly removing a client from a channel.
             elif command == "KICK":
                 if argument != "":
@@ -211,14 +215,14 @@ while 1<2:
                                 if lchan[chan][clt]==argument:
                                     lchan[chan].pop(clt)
                                     ladmin[chan].remove(clt)
-                                    clt.send("Kicked from {0} by admin.\n".format(chan).encode("utf-8"))
+                                    ##clt.send("Kicked from {0} by admin.\n".format(chan).encode("utf-8"))
                                     break
-                        else:
-                            i.send("Error: This is an admin command.\n".encode("utf-8"))
-                    else:
-                        i.send("You are not in any channel.\n".encode("utf-8"))
-                else:
-                    i.send("Error: No nickname provided.\n".encode("utf-8"))
+                        ##else:
+                        ##    i.send("Error: This is an admin command.\n".encode("utf-8"))
+                    ##else:
+                    ##    i.send("You are not in any channel.\n".encode("utf-8"))
+                ##else:
+                ##    i.send("Error: No nickname provided.\n".encode("utf-8"))
             ##Code for REN feature: changing the name of a channel
             elif command == "REN":
                 if argument !="":
@@ -227,10 +231,10 @@ while 1<2:
                         if i==ladmin[chan][0]:
                             lchan[argument]=lchan.pop(chan)
                             ladmin[argument]=ladmin.pop(chan)
-                        else:
-                            i.send("Error: This is an admin command.\n".encode("utf-8"))
-                    else:
-                        i.send("You are not in any channel.\n".encode("utf-8"))
-                else:
-                    i.send("Error: No channel name provided.\n".encode("utf-8"))
+                        ##else:
+                        ##    i.send("Error: This is an admin command.\n".encode("utf-8"))
+                    ##else:
+                    ##    i.send("You are not in any channel.\n".encode("utf-8"))
+                ##else:
+                ##    i.send("Error: No channel name provided.\n".encode("utf-8"))
                 

@@ -120,6 +120,7 @@ Peut utiliser list(d) pour obtenir la liste des clés d'un dictionnaire par ordr
 
 Problème sur NICK pour admin au début parce que savait pas dans quel ordre était stocké nouveaux utilisateurs dans dict d'un channel
 
+## 26 avril
 Problème: list(d) ne donne en fait pas les valeurs par ordre d'insertion, ou plutot les éléments ne sont pas inséré dans un dictionnaire par ordre d'insertion
 Doit trouver autre solution
 --> Création d'une liste de sockets pour chaque channel, socket à indice 0 a les droits d'admin
@@ -136,3 +137,7 @@ Ajout commandes KICK et REN -> check si dans un canal, check si admin -> message
 
 ### HELP
 Ajout fonction HELP, simple recopie dans un send de ce qui est donné dans le sujet du projet.
+
+### Première évalutation sous VPL
+Problèmes beaucoup de clients terminent avec un EXIT_failure doit trouver pourquoi
+-> première piste : Message d'instructions à destination de l'utilisateur causent problèmes dans le script d'éval
