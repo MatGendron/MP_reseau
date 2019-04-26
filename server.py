@@ -86,6 +86,12 @@ def in_a_cnl(sock):
         if sock in lchan[chan]:
             return True
     return False
+
+def current_cnl(sock):
+    for chan in lchan:
+        if sock in lchan[chan]:
+            return chan
+    return ""
         
 while 1<2:
     reading,writing,exceptional=select.select(lsock,[],lsock)
@@ -189,24 +195,34 @@ while 1<2:
                     lsock.remove(i)
                     lclt.pop(i)
                     send_all(lsock,s,i,leave_msg)
-            elif command == "KILL":
-                kck_addr=argument
-                temp=0
-                for k in lclt:
-                    if lclt[k]==kck_addr:
-                        k.send("Seeya\n".encode("utf-8"))
-                        k.close()
-                        lsock.remove(k)
-                        temp=k
-                lclt.pop(temp)
-            ##Code for PART feature: leaving a channel
             elif command == "KICK":
-                kick_arg=argument
-                kick_cnl=kick_arg.partition(' ')[0].rstrip(' \n')
-                kick_nck=kick_arg.partition(' ')[2].rstrip(' \n')
-                if kick_cnl!="default" and kick_cnl in lchan and i in lchan[kick_cnl]:
-                    temp=0
-                    for k in lchan[kick_cnl]:
-                        if lchan[kick_cnl][k]==kick_nck:
-                            temp=k
-                    lchan[kick_cnl].pop(temp)
+                if argument != "":
+                    chan=current_cnl(i)
+                    if chan!="":
+                        if i==ladmin[chan][0]:
+                            for clt in lchan[chan]:
+                                if lchan[chan][clt]==argument:
+                                    lchan[chan].pop(clt)
+                                    ladmin[chan].remove(clt)
+                                    clt.send("Kicked from {0} by admin.\n".format(chan).encode("utf-8"))
+                                    break
+                        else:
+                            i.send("Error: This is an admin command.\n".encode("utf-8"))
+                    else:
+                        i.send("You are not in any channel.\n".encode("utf-8"))
+                else:
+                    i.send("Error: No nickname provided.\n".encode("utf-8"))
+            elif command == "REN":
+                if argument !="":
+                    chan=current_cnl(i)
+                    if chan!="":
+                        if i==ladmin[chan][0]:
+                            lchan[argument]=lchan.pop(chan)
+                            ladmin[argument]=ladmin.pop(chan)
+                        else:
+                            i.send("Error: This is an admin command.\n".encode("utf-8"))
+                    else:
+                        i.send("You are not in any channel.\n".encode("utf-8"))
+                else:
+                    i.send("Error: No channel name provided.\n".encode("utf-8"))
+                

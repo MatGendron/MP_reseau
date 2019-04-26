@@ -129,3 +129,7 @@ Fix commande /LIST pour afficher "*No channels*"
 Ajout aspect dernier client à quitter un channel cause sa fermeture
 
 Note : inconsistence dans affichage de certaines infos -> peut y a avoir retours à la ligne dans infos rendues par /WHO ou /LIST ou non
+
+Ajout commandes KICK et REN -> check si dans un canal, check si admin -> message d'erreur sinon
+* KICK : même code que pour /LEAVE
+* REN : pop ancien chan dans clé avec nouveau nom
