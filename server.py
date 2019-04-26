@@ -64,6 +64,8 @@ lsock=[s]
 lchan={}
 ##Dictionnary of all clients
 lclt={}
+##Dictionnary used to manage admins
+ladmin={}
 
 ##Function used to send a message to all clients, sock1 is used as an exception to avoid broken pipe error, sock2 is used
 ##to make an exception for another socket if needed.
@@ -122,18 +124,18 @@ while 1<2:
             elif command == "WHO":
                 for k in lchan:
                     if i in lchan[k]:
-                        lcnlid=list(lchan[k])
-                        admin=lcnlid[len(lcnlid)-1]
                         for r in lchan[k]:
-                            if r==admin:
+                            if r==ladmin[k][0]:
                                 i.send("@{0}@\n".format(lchan[k][r]).encode("utf-8"))
                             else:
                                 i.send("{0}\n".format(lchan[k][r]).encode("utf-8"))
             elif command == "LIST":
-                print(command)
                 i.send("List of channels:\n".encode("utf-8"))
-                for k in lchan:
-                    i.send("{0}\n".format(k).encode("utf-8"))
+                if len(lchan)!=0:
+                    for k in lchan:
+                        i.send("{0}\n".format(k).encode("utf-8"))
+                else:
+                    i.send("*No channels*\n".encode("utf-8"))
             ##Code for KILL feature: removing a client from the chat
             elif command == "NICK":
                 if argument != "":
@@ -165,12 +167,17 @@ while 1<2:
                     if argument != "":
                         if argument not in lchan:
                             lchan[argument]={}
+                            ladmin[argument]=[]
                         lchan[argument][i]=lclt[i]
+                        ladmin[argument].append(i)
                         send_cnl(lchan[argument],i,"JOIN {0} {1}\n".format(argument,lclt[i]))
             elif command == "LEAVE":
                 for k in lchan:
                     if i in lchan[k]:
                         lchan[k].pop(i)
+                        ladmin[k].remove(i)
+                        if len(ladmin[k])==0:
+                            lchan.pop(k)
                         break
                 i.send("Use /JOIN command to join another channel or /BYE command to disconnect from the server.\n".encode("utf-8"))
             elif command == "BYE":

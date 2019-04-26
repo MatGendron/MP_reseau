@@ -119,3 +119,13 @@ Ajout identifiant (nick) au début des messages textuels.
 Peut utiliser list(d) pour obtenir la liste des clés d'un dictionnaire par ordre d'insertion
 
 Problème sur NICK pour admin au début parce que savait pas dans quel ordre était stocké nouveaux utilisateurs dans dict d'un channel
+
+Problème: list(d) ne donne en fait pas les valeurs par ordre d'insertion, ou plutot les éléments ne sont pas inséré dans un dictionnaire par ordre d'insertion
+Doit trouver autre solution
+--> Création d'une liste de sockets pour chaque channel, socket à indice 0 a les droits d'admin
+
+Fix commande /LIST pour afficher "*No channels*"
+
+Ajout aspect dernier client à quitter un channel cause sa fermeture
+
+Note : inconsistence dans affichage de certaines infos -> peut y a avoir retours à la ligne dans infos rendues par /WHO ou /LIST ou non
