@@ -92,25 +92,30 @@ s.connect(address)
 
 liste = [s, sys.stdin]
 
+cmdlist=["HELP","LIST","JOIN","WHO","MSG","BYE","KICK","REN"]
+
 # Main loop
 while True:
-	reading, writing, exceptional = select.select(liste,[],[])
-	for r in reading:
-		if r in exceptional:
-			r.close()
-			exit()
-		if r!=sys.stdin:
-			d=r.recv(LIMIT).decode("utf-8")
-			print(d)
-		else:
-			l=r.readline()
-			if l[0]=='/':
-				l=l[1:]+" "
-				##print(l)
-			else:
-				l="PRINT "+l
-			s.send(l.encode("utf-8"))
-
+    reading, writing, exceptional = select.select(liste,[],[])
+    for r in reading:
+        if r in exceptional:
+            r.close()
+            ##exit()
+        elif r!=sys.stdin:
+            d=r.recv(LIMIT).decode("utf-8")
+            print(d)
+        else:
+            msg=r.readline()
+            if msg.rstrip(' \n') != "":
+                if msg[0]=='/':
+                    msg=msg[1:]+" "
+                    command, argument=msg.split(" ",1)
+                    command=command.rstrip(' \n')
+                    if command in cmdlist:
+                        s.send(msg.encode("utf-8"))
+                else:
+                    msg="PRINT "+msg
+                    s.send(msg.encode("utf-8"))
 
 """
             l.split(" ", 1)

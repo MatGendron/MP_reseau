@@ -110,11 +110,17 @@ while 1<2:
             ##print(command)
             ##print(argument)
             ##Code for sending messages in a channel, no command on the client's side
-            if command == "PRINT":
+            if lclt[i]=="*Nick_pending*":
+                if argument!="":
+                    if len(lchan)!=0:
+                        for k in lchan:
+                            i.send("{0}\n".format(k).encode("utf-8"))
+                    lclt[i]=argument.rstrip(' \n')
+            elif command == "PRINT":
                 if argument!="":
                     for k in lchan:
                         if i in lchan[k]:
-                            send_cnl(lchan[k],i,lclt[i]+" : "+argument)
+                            send_cnl(lchan[k],i,argument)
             elif command == "HELP":
                 i.send("* /HELP: print this message\n* /LIST: list all available channels on server\n* /JOIN <channel>: join (or create) a channel\n* /LEAVE: leave current channel\n* /WHO: list users in current channel\n* <message>: send a message in current channel\n* /MSG <nick> <message>: send a private message in current channel\n* /BYE: disconnect from server\n* /KICK <nick>: kick user from current channel [admin]\n* /REN <channel>: change the current channel name [admin]\n".encode("utf-8"))
             ##Code for MSG feature: sending private message to another client in the same channel
@@ -127,7 +133,8 @@ while 1<2:
                         break
                 for k in lchan:
                     if i in lchan[k] and sock_dest in lchan[k]:
-                        sock_dest.send(("<DM> "+lclt[i]+" : "+msg).encode("utf-8"))
+                        ##sock_dest.send(("<DM> "+lclt[i]+" : "+msg).encode("utf-8"))
+                        sock_dest.send(msg.encode("utf-8"))
                         break
             ##Code for LIST feature: listing channels
             elif command == "WHO":
@@ -148,23 +155,20 @@ while 1<2:
                 ##    i.send("*No channels*\n".encode("utf-8"))
             ##Code for NICK feature: choosing a name for a client
             elif command == "NICK":
+                print(decmsg)
                 if argument != "":
                     bad_nick=False
                     for clt in lclt:
                         if argument==lclt[clt]:
                             bad_nick=True
                             break
-                    if bad_nick:
-                        break
                     ##    i.send("Nickname already taken.\n".encode("utf-8"))
-                    else:
-                        if lclt[i]=="*Nick_pending*":
-                            ##i.send("List of channels:\n".encode("utf-8"))
-                            if len(lchan)!=0:
-                                for k in lchan:
-                                    i.send("{0}\n".format(k).encode("utf-8"))
-                            else:
-                                break
+                    if bad_nick==False:
+                        ##if lclt[i]=="*Nick_pending*":
+                        ##    ##i.send("List of channels:\n".encode("utf-8"))
+                        ##    if len(lchan)!=0:
+                        ##        for k in lchan:
+                        ##            i.send("{0}\n".format(k).encode("utf-8"))
                                 ##i.send("*No channels*\n".encode("utf-8"))
                             ##i.send("Use /LIST command to display this list again.\nJoin a channel with /JOIN <channel_name> command before continuing.\nUse /HELP to display a list of commands.\n".encode("utf-8"))
                         for chan in lchan:
@@ -173,10 +177,7 @@ while 1<2:
                         lclt[i]=argument
             ##Code for JOIN feature: joining a channel
             elif command == "JOIN":
-                if lclt[i]=="*Nick_pending*":
-                    break
-                    ##i.send("Choose a nickname before joining a channel\n".encode("utf-8"))
-                else:
+                if lclt[i]!="*Nick_pending*":
                     if argument != "":
                         if argument not in lchan:
                             lchan[argument]={}
@@ -196,11 +197,7 @@ while 1<2:
                 ##i.send("Use /JOIN command to join another channel or /BYE command to disconnect from the server.\n".encode("utf-8"))
             ##Code for BUY feature: disconnecting from the server.
             elif command == "BYE":
-                if in_a_cnl(i):
-                    break
-                    ##i.send("Use /LEAVE command to leave your current channel before disconnecting from the server.\n")
-                else:
-                    ##leave_msg="BYE {0}!\n".format(lclt[i])
+                if in_a_cnl(i)==False:
                     i.close()
                     lsock.remove(i)
                     lclt.pop(i)

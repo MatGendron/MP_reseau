@@ -141,3 +141,13 @@ Ajout fonction HELP, simple recopie dans un send de ce qui est donné dans le su
 ### Première évalutation sous VPL
 Problèmes beaucoup de clients terminent avec un EXIT_failure doit trouver pourquoi
 -> première piste : Message d'instructions à destination de l'utilisateur causent problèmes dans le script d'éval
+
+Tentative de fix en enlevant instructions a pas fonctionné
+
+Deuxième idée: problème parce que premier renseignement d'un nom doit pas se faire avec commande NICK
+
+BUG: Si quand se connecte au serveur fait un JOIN "nouveau chan", LEAVE, JOIN "chan existant" messages sur chan existants vont apparâitre avec PRINT commande (decmsg envoyé, pas juste argument) -> probablement causé par fait que NICK pur un client se retrouve être PRINT "nick"
+
+Problème traitement de r exceptionnal
+
+Essai modifications côté client pour empêcher d'envoyer des messages qui ne sont pas des commandes
