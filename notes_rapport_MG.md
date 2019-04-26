@@ -133,3 +133,6 @@ Note : inconsistence dans affichage de certaines infos -> peut y a avoir retours
 Ajout commandes KICK et REN -> check si dans un canal, check si admin -> message d'erreur sinon
 * KICK : même code que pour /LEAVE
 * REN : pop ancien chan dans clé avec nouveau nom
+
+### HELP
+Ajout fonction HELP, simple recopie dans un send de ce qui est donné dans le sujet du projet.
