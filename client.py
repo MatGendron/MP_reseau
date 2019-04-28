@@ -57,6 +57,8 @@ USAGE="""USAGE :
 VERSION="0.01"
 LIMIT=2048
 address = LOCALHOST
+nick = "\n"
+
 
 def ERROR(s):
     print("Error : ", s)
@@ -92,24 +94,50 @@ s.connect(address)
 
 liste = [s, sys.stdin]
 
+#BEGINNING
+
+nick_loop = True
+while nick_loop:
+    reading, writing, exceptional = select.select(liste,[],[])
+    for r in reading:
+        if r!=sys.stdin:
+            d=r.recv(LIMIT).decode("utf-8")
+            if d in ("Nick?", "Nickname already taken."):
+                if d != "Nick?":
+                    print(d)
+                print("Specify nickname.")
+                nick = "\n"
+                while nick == "\n":
+                    nick=input()
+                nick = "NICK " + nick
+                s.send(nick.encode("utf-8"))
+            elif d[:4] == "List":
+                print(d)
+                nick_loop = False
+            else:
+                print(d)
+
 # Main loop
 while True:
-	reading, writing, exceptional = select.select(liste,[],[])
-	for r in reading:
-		if r in exceptional:
-			r.close()
-			exit()
-		if r!=sys.stdin:
-			d=r.recv(LIMIT).decode("utf-8")
-			print(d)
-		else:
-			l=r.readline()
-			if l[0]=='/':
-				l=l[1:]+" "
-				##print(l)
-			else:
-				l="PRINT "+l
-			s.send(l.encode("utf-8"))
+    reading, writing, exceptional = select.select(liste,[],[])
+    for r in reading:
+        if r in exceptional:
+            r.close()
+            exit()
+        if r!=sys.stdin:
+            d=r.recv(LIMIT).decode("utf-8")
+            if d == "BYE!":
+                r.close()
+                exit()
+            else:
+                print(d)
+        else:
+            l=r.readline()
+            if l[0]=='/':
+                l=l[1:-1]+" \n"
+            else:
+                l="PRINT "+l
+            s.send(l.encode("utf-8"))
 
 
 """
