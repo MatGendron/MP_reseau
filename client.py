@@ -54,7 +54,7 @@ USAGE="""USAGE :
   -a | --addr
     change the address (by default localhost)
 """
-VERSION="0.01"
+VERSION="0.03"
 LIMIT=2048
 address = LOCALHOST
 nick = "\n"

@@ -23,7 +23,7 @@ USAGE="""USAGE :
     display some text during the run
 """
 
-VERSION="0.02"
+VERSION="0.03"
 LIMIT=2048
 verbose=False
 
