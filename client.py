@@ -132,12 +132,12 @@ while True:
             else:
                 print(d)
         else:
-            l=r.readline()
-            if l[0]=='/':
-                l=l[1:-1]+" \n"
+            msg=r.readline()
+            if msg[0]=='/':
+                msg=msg[1:-1]+" \n"
             else:
-                l="PRINT "+l
-            s.send(l.encode("utf-8"))
+                msg="PRINT "+msg
+            s.send(msg.encode("utf-8"))
 
 
 """
