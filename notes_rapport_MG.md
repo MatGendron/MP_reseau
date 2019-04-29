@@ -142,3 +142,11 @@ Ajout fonction HELP, simple recopie dans un send de ce qui est donné dans le su
 ### MSG nick1;nick2;nick3;...
 
 Reprise du code pour le /MSG de la V0 -> petit problèmes pour construire liste de destinataire du message à cause de break mal placé. Pour le moment implémenté que pour nick dans le même canal.
+
+### Git tag
+
+Ajout tag à l'aide de git sur le commit de la V0 finie.
+
+##KILL et BAN
+
+Problème avec BAN : peut pas tester maintenant parce que peut pas utiliser couple (IP,port) récupéré à l'aide de socket.getpeernam() mais le port de connexion changeant à chaque appel du programme client.py, cette méthode n'est pas utilie, il faudrait donc faire un ban uniquement sur l'adresse IP elle-même mais dans notre environnement cela empêcherait toute nouvelle connexion.

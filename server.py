@@ -58,7 +58,7 @@ s.setsockopt(socket.SOL_SOCKET,socket.SO_REUSEADDR,1)
 s.bind(('',1459))
 s.listen(1)
 ##List of server and clients sockets
-lsock=[s]
+lsock=[s, sys.stdin]
 ##Dictionnary of chat channels
 lchan={}
 ##Dictionnary of all clients
@@ -67,12 +67,14 @@ lclt={}
 lcnlusr={}
 ##Dictionnary used to manage admins
 ladmin={}
+##List of banned adresses
+lban=[]
 
 ##Function used to send a message to all clients, sock1 is used as an exception to avoid broken pipe error, sock2 is used
 ##to make an exception for another socket if needed.
 def send_all(l,sock1,sock2,msg):
     for i in l:
-        if i!=sock1 and i!=sock2:
+        if i!=sock1 and i!=sock2 and i!=sys.stdin:
             i.send(msg.encode("utf-8"))
 
 ##Function used to send a message to the clients in a given channel
@@ -98,11 +100,52 @@ def current_cnl(sock):
 while 1<2:
     reading,writing,exceptional=select.select(lsock,[],lsock)
     for i in reading:
-        if i==s:
+        if i==sys.stdin:
+            line=i.readline()
+            if line[0]=='/':
+                line=line[1:-1]+" \n"
+                command,argument=line.split(" ", 1)
+                command=command.rstrip(' \n')
+                argument=argument.rstrip(' \n')
+                if command == "USERS":
+                    for clt in lclt:
+                        print(lclt[clt])
+                if command == "SOCKETS":
+                    for clt in lclt:
+                        print(clt)
+                if command == "KILL":
+                    sock_kill=0
+                    for clt in lclt:
+                        if lclt[clt]==argument:
+                            sock_kill=clt
+                            break
+                    sock_kill.send("BYE!".encode("utf-8"))
+                    leave_msg="{0} IS DED!".format(lclt[sock_kill])
+                    sock_kill.close()
+                    lsock.remove(sock_kill)
+                    lclt.pop(sock_kill)
+                    send_all(lsock,s,sock_kill,leave_msg)
+                if command == "BAN":
+                    sock_ban=0
+                    for clt in lclt:
+                        if lclt[clt]==argument:
+                            sock_ban=clt
+                            break
+                    lban.append(sock_ban.getpeername())
+                    sock_ban.send("BYE!".encode("utf-8"))
+                    leave_msg="{0} IS DED!".format(lclt[sock_ban])
+                    sock_ban.close()
+                    lsock.remove(sock_ban)
+                    lclt.pop(sock_ban)
+                    send_all(lsock,s,sock_ban,leave_msg)
+        elif i==s:
             news,addrnews=i.accept()
-            lsock+=[news,]
-            lclt[news]="*Nick_pending*"
-            news.send("Nick?".encode("utf-8"))
+            if addrnews not in lban:
+                lsock+=[news,]
+                lclt[news]="*Nick_pending*"
+                news.send("Nick?".encode("utf-8"))
+            else:
+                news.send("You are banned from this server.")
         else:
             decmsg=i.recv(2042).decode("utf-8")
             if decmsg=="":
