@@ -105,7 +105,7 @@ while 1<2:
             decmsg=i.recv(2042).decode("utf-8")
             if decmsg=="":
                 #force quit
-                if verbose: print(lclt[i], "has forcefully quit.")
+                if verbose: print(lclt[i], "Has forcefully quit.")
                 if in_a_cnl(i):
                     #LEAVE
                     for k in lchan:
@@ -195,7 +195,7 @@ while 1<2:
                             ladmin[argument]=[]
                         lchan[argument][i]=lclt[i]
                         ladmin[argument].append(i)
-                        i.send("Successfully joined {0}".format(argument).encode("utf-8"))
+                        i.send("Successfully joined {0}.".format(argument).encode("utf-8"))
                         send_cnl(lchan[argument],i,"JOIN {0} {1}".format(argument,lclt[i]))
             ##Code fo LEAVE feature: leaving a channel
             elif command == "LEAVE":
