@@ -63,6 +63,8 @@ lsock=[s]
 lchan={}
 ##Dictionnary of all clients
 lclt={}
+##Dictionnary of users in channels used to determine admin
+lcnlusr={}
 ##Dictionnary used to manage admins
 ladmin={}
 
@@ -111,8 +113,8 @@ while 1<2:
                     for k in lchan:
                         if i in lchan[k]:
                             lchan[k].pop(i)
-                            ladmin[k].remove(i)
-                            if len(ladmin[k])==0:
+                            lcnlusr[k].remove(i)
+                            if len(lcnlusr[k])==0:
                                 lchan.pop(k)
                             break
                 command="BYE"
@@ -133,22 +135,24 @@ while 1<2:
                 i.send("* /HELP: print this message\n* /LIST: list all available channels on server\n* /JOIN <channel>: join (or create) a channel\n* /LEAVE: leave current channel\n* /WHO: list users in current channel\n* <message>: send a message in current channel\n* /MSG <nick> <message>: send a private message in current channel\n* /BYE: disconnect from server\n* /KICK <nick>: kick user from current channel [admin]\n* /REN <channel>: change the current channel name [admin]".encode("utf-8"))
             ##Code for MSG feature: sending private message to another client in the same channel
             elif command == "MSG":
-                nick_dest,msg=argument.split(' ',1)
-                sock_dest=0
+                lnick_dest,msg=argument.split(' ',1)
+                lnick_dest=lnick_dest.split(';')
+                lsock_dest=[]
                 for sock_clt in lclt:
-                    if lclt[sock_clt]==nick_dest:
-                        sock_dest=sock_clt
-                        break
+                    if lclt[sock_clt] in lnick_dest:
+                        lsock_dest.append(sock_clt)
                 for k in lchan:
-                    if i in lchan[k] and sock_dest in lchan[k]:
-                        sock_dest.send(("<DM> "+lclt[i]+" : "+msg).encode("utf-8"))
+                    if i in lchan[k]:
+                        for sock_dest in lsock_dest:
+                            if sock_dest in lchan[k]:
+                                sock_dest.send(("<DM> "+lclt[i]+" : "+msg).encode("utf-8"))
                         break
             ##Code for LIST feature: listing channels
             elif command == "WHO":
                 for k in lchan:
                     if i in lchan[k]:
                         for r in lchan[k]:
-                            if r==ladmin[k][0]:
+                            if r==lcnlusr[k][0]:
                                 i.send("@{0}@\n".format(lchan[k][r]).encode("utf-8"))
                             else:
                                 i.send("{0}\n".format(lchan[k][r]).encode("utf-8"))
@@ -192,9 +196,9 @@ while 1<2:
                     if argument != "":
                         if argument not in lchan:
                             lchan[argument]={}
-                            ladmin[argument]=[]
+                            lcnlusr[argument]=[]
                         lchan[argument][i]=lclt[i]
-                        ladmin[argument].append(i)
+                        lcnlusr[argument].append(i)
                         i.send("Successfully joined {0}.".format(argument).encode("utf-8"))
                         send_cnl(lchan[argument],i,"JOIN {0} {1}".format(argument,lclt[i]))
             ##Code fo LEAVE feature: leaving a channel
@@ -202,8 +206,8 @@ while 1<2:
                 for k in lchan:
                     if i in lchan[k]:
                         lchan[k].pop(i)
-                        ladmin[k].remove(i)
-                        if len(ladmin[k])==0:
+                        lcnlusr[k].remove(i)
+                        if len(lcnlusr[k])==0:
                             lchan.pop(k)
                         break
                 i.send("Use /JOIN command to join another channel or /BYE command to disconnect from the server.".encode("utf-8"))
@@ -223,11 +227,11 @@ while 1<2:
                 if argument != "":
                     chan=current_cnl(i)
                     if chan!="":
-                        if i==ladmin[chan][0]:
+                        if i==lcnlusr[chan][0]:
                             for clt in lchan[chan]:
                                 if lchan[chan][clt]==argument:
                                     lchan[chan].pop(clt)
-                                    ladmin[chan].remove(clt)
+                                    lcnlusr[chan].remove(clt)
                                     clt.send("Kicked from {0} by admin.".format(chan).encode("utf-8"))
                                     break
                         else:
@@ -241,9 +245,9 @@ while 1<2:
                 if argument !="":
                     chan=current_cnl(i)
                     if chan!="":
-                        if i==ladmin[chan][0]:
+                        if i==lcnlusr[chan][0]:
                             lchan[argument]=lchan.pop(chan)
-                            ladmin[argument]=ladmin.pop(chan)
+                            lcnlusr[argument]=lcnlusr.pop(chan)
                         else:
                             i.send("Error: This is an admin command.".encode("utf-8"))
                     else:

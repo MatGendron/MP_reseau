@@ -136,3 +136,9 @@ Ajout commandes KICK et REN -> check si dans un canal, check si admin -> message
 
 ### HELP
 Ajout fonction HELP, simple recopie dans un send de ce qui est donné dans le sujet du projet.
+
+## 29 avril
+
+### MSG nick1;nick2;nick3;...
+
+Reprise du code pour le /MSG de la V0 -> petit problèmes pour construire liste de destinataire du message à cause de break mal placé. Pour le moment implémenté que pour nick dans le même canal.
