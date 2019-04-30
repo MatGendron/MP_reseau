@@ -111,6 +111,10 @@ while nick_loop:
                     nick=input()
                 nick = "NICK " + nick
                 s.send(nick.encode("utf-8"))
+            elif d=="You are banned from this server.":
+                print(d)
+                r.close()
+                exit()
             elif d[:4] == "List":
                 print(d)
                 nick_loop = False

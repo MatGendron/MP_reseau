@@ -150,3 +150,8 @@ Ajout tag à l'aide de git sur le commit de la V0 finie.
 ##KILL et BAN
 
 Problème avec BAN : peut pas tester maintenant parce que peut pas utiliser couple (IP,port) récupéré à l'aide de socket.getpeernam() mais le port de connexion changeant à chaque appel du programme client.py, cette méthode n'est pas utilie, il faudrait donc faire un ban uniquement sur l'adresse IP elle-même mais dans notre environnement cela empêcherait toute nouvelle connexion.
+
+Finit implémentation, BAN sur adresse IP donc intestable correctement ici
+Tout semble fonctionner correctement.
+
+Ai juste eu à mettre condition sur message de BAN envoyé côté client dans le loop du Nickname

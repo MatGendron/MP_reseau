@@ -131,21 +131,24 @@ while 1<2:
                         if lclt[clt]==argument:
                             sock_ban=clt
                             break
-                    lban.append(sock_ban.getpeername())
+                    ip_ban,port_ban=sock_ban.getpeername()
+                    lban.append(ip_ban)
                     sock_ban.send("BYE!".encode("utf-8"))
-                    leave_msg="{0} IS DED!".format(lclt[sock_ban])
+                    leave_msg="{0} HAS BEEN FORSAKEN!".format(lclt[sock_ban])
                     sock_ban.close()
                     lsock.remove(sock_ban)
                     lclt.pop(sock_ban)
                     send_all(lsock,s,sock_ban,leave_msg)
         elif i==s:
             news,addrnews=i.accept()
-            if addrnews not in lban:
+            ipnews,portnews=addrnews
+            if ipnews not in lban:
                 lsock+=[news,]
                 lclt[news]="*Nick_pending*"
                 news.send("Nick?".encode("utf-8"))
             else:
-                news.send("You are banned from this server.")
+                news.send("You are banned from this server.".encode("utf-8"))
+                news.close()
         else:
             decmsg=i.recv(2042).decode("utf-8")
             if decmsg=="":
