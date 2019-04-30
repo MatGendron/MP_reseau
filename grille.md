@@ -32,9 +32,9 @@
 | Commandes                     | Score (/10) |
 | ------------------------------| ----------- |
 | déconnecte brutalement        |             |
-| le client du serveur (/KILL)  |      10     |
+| le client du serveur (/KILL)  |      6      |
 | déconnecte brutalement        |             |
 |le client du serveur et        |             |
-|l'empêche de                   |      10     |
+|l'empêche de                   |      6      |
 |se reconnecter (/BAN)          |             |
 

@@ -98,11 +98,31 @@ Aucun problème pour développer cette fonctionnalité.
 #### NICK 
 
 La commande NICK vérifie que le pseudo passé en paramétre n'est pas déjà employé par un autre client et remplace le pseudo du client dans les dictionnaires \[socket\]:pseudo général et du canal où il est présent.
+Utilisation d'un booléen servant de flag pour déterminer à l'aide d'un parcours de la liste des clients si un pseudo est déjà utilisé.
+Si ce booléen est vrai, le nom donné est déjà utilisé et est donc refusé.
+
+Nous avions tout d'abord pensé que le pseudo demandé à la connection devait être donné à l'aide de cette commande et avont réalisé une implémentation en conséquence mais les tests VPL nous ont fait prendre connaissance du contraire, la première input côté client à la connexion devant servir de pseudo, ce qui a posé son lot de problème.  
+La gestion de ce cas particulier a d'abord été effectuée côté client avant d'être réeffectuée côté serveur pour des raison de stabilité.  
+A la connexion, un client est donné un pseudo provisoire indiquant que le serveur est en attente d'un pseudo pour ce client et toute autre input que la commande /BYE est considérée comme le pseudo du client s'il est valide (Pas une potentielle commande ou une chaîne de caractères vide).
+Le client ne peut pas utiliser les autres commandes (à part /BYE) tant qu'il n'a pas renseigné un pseudo.
 
 #### MSG a plusieurs utilisateurs
 
 Cette fonctionnalité est implémentée en découpant la liste d'utilisateurs de la forme \<nick1;nick2;etc...\> selon les point-virgules à l'aide de la méthode str.split et en envoyant le message donné à chacun de ces utilisateurs.
+Passé quelques erreurs à la compilation, son développement n'a pas posé problème.
 
+### Autres fonctionnalités
+
+#### KILL et BAN
+
+KILL et BAN reprennent essentiellement le code de BYE à la différence que ces commandes peuvent seulement être saisie côté serveur, dont l'input est récupérée à l'aide de sys.stdin, comme pour le client.
+Un échec des tests VPL était provoqué par la non verification qu'une input avait une longueur strictement positive, mais une fois ce problème réglé les fonctionnalités se comportaient correctement, en revanche, un oubli au moment de l'écriture de ce rapport subsiste et les deux fonctionnalités ne retire par le client concerné des canaux où il est présent.
+BAN ajoute en plus le l'IP du client, récupérée à l'aide de socket.getpeername, à une liste d'adresses interdite, cette fonctionnalité n'a pas pu être testée, les clients ayant tous la même IP dans notre environnement de test.
+
+### Autres Notes
+
+* Un certain temps a été passé à faire en sorte que le client et le serveur se comporte bien dans le cas ou l'un d'eux recoivent un signal d'interruption (Ctrl+C), ceci a été fait à l'aide de la bibliothèque signal.
+* Git au travers de GitHub a été employé pour faciliter le développement.
 
 ## Annexe 
 
