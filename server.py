@@ -311,18 +311,13 @@ while 1<2:
                     chan=current_cnl(i)
                     if chan!="":
                         if i==lcnlusr[chan][0]:
-                            print(lcnlusr[chan])
-                            print(lchan[chan])
                             for clt in lchan[chan]:
                                 if lchan[chan][clt]==argument:
-                                    print(clt)
                                     lchan[chan].pop(clt)
                                     lcnlusr[chan].remove(clt)
                                     send_cnl(lchan[chan],0,"{0} has been kicked.".format(argument))
                                     clt.send("Kicked from {0} by admin.".format(chan).encode("utf-8"))
                                     break
-                            print(lcnlusr[chan])
-                            print(lchan[chan])
                         else:
                             i.send("Error: This is an admin command.".encode("utf-8"))
                     else:
