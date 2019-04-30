@@ -58,7 +58,7 @@ s.setsockopt(socket.SOL_SOCKET,socket.SO_REUSEADDR,1)
 s.bind(('',1459))
 s.listen(1)
 ##List of server and clients sockets
-lsock=[s, sys.stdin]
+lsock=[s]
 ##Dictionnary of chat channels
 lchan={}
 ##Dictionnary of all clients
@@ -100,7 +100,17 @@ def current_cnl(sock):
 while 1<2:
     reading,writing,exceptional=select.select(lsock,[],lsock)
     for i in reading:
-        if i==sys.stdin:
+        if i==s:
+            news,addrnews=i.accept()
+            ipnews,portnews=addrnews
+            if ipnews not in lban:
+                lsock+=[news,]
+                lclt[news]="*Nick_pending*"
+                news.send("Choose a nickname before joining a channel.".encode("utf-8"))
+            else:
+                news.send("You are banned from this server.".encode("utf-8"))
+                news.close()
+        elif i==sys.stdin:
             line=i.readline()
             if line[0]=='/':
                 line=line[1:-1]+" \n"
@@ -139,16 +149,6 @@ while 1<2:
                     lsock.remove(sock_ban)
                     lclt.pop(sock_ban)
                     send_all(lsock,s,sock_ban,leave_msg)
-        elif i==s:
-            news,addrnews=i.accept()
-            ipnews,portnews=addrnews
-            if ipnews not in lban:
-                lsock+=[news,]
-                lclt[news]="*Nick_pending*"
-                news.send("Nick?".encode("utf-8"))
-            else:
-                news.send("You are banned from this server.".encode("utf-8"))
-                news.close()
         else:
             decmsg=i.recv(2042).decode("utf-8")
             if decmsg=="":
@@ -172,7 +172,28 @@ while 1<2:
             ##print(command)
             ##print(argument)
             ##Code for sending messages in a channel, no command on the client's side
-            if command == "PRINT":
+            if lclt[i]=="*Nick_pending*":
+                if command=="PRINT" and argument!="" and argument != "*Nick_pending*":
+                    bad_nick=False
+                    for clt in lclt:
+                        if argument==lclt[clt]:
+                            bad_nick=True
+                            break
+                    if bad_nick:
+                        i.send("Nickname already taken.".encode("utf-8"))
+                    else:
+                        lclt[i]=argument
+                        reply = "List of channels:\n"
+                        if len(lchan)!=0:
+                            for k in lchan:
+                                reply += "{0}\n".format(k)
+                        else:
+                            reply += "*No channels*\n"
+                        reply += "Use /LIST command to display this list again.\nJoin a channel with /JOIN <channel_name> command before continuing.\nUse /HELP to display a list of commands."
+                        i.send(reply.encode("utf-8"))
+                else:
+                    i.send("Invalid nickname.".encode("utf-8"))
+            elif command == "PRINT":
                 if argument!="":
                     for k in lchan:
                         if i in lchan[k]:
@@ -212,7 +233,7 @@ while 1<2:
                     i.send("*No channels*\n".encode("utf-8"))
             ##Code for NICK feature: choosing a name for a client
             elif command == "NICK":
-                if argument != "":
+                if argument != "" and argument != "*Nick_pending*":
                     bad_nick=False
                     for clt in lclt:
                         if argument==lclt[clt]:
@@ -221,19 +242,12 @@ while 1<2:
                     if bad_nick:
                         i.send("Nickname already taken.".encode("utf-8"))
                     else:
-                        if lclt[i]=="*Nick_pending*":
-                            reply = "List of channels:\n"
-                            if len(lchan)!=0:
-                                for k in lchan:
-                                    reply += "{0}\n".format(k)
-                            else:
-                                reply += "*No channels*\n"
-                            reply += "Use /LIST command to display this list again.\nJoin a channel with /JOIN <channel_name> command before continuing.\nUse /HELP to display a list of commands."
-                            i.send(reply.encode("utf-8"))
                         for chan in lchan:
                             if i in lchan[chan]:
                                 lchan[chan][i]=argument
                         lclt[i]=argument
+                else:
+                    i.send("Invalid nickname.".encode("utf-8"))
             ##Code for JOIN feature: joining a channel
             elif command == "JOIN":
                 if lclt[i]=="*Nick_pending*":

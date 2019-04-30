@@ -161,3 +161,13 @@ Ai juste eu à mettre condition sur message de BAN envoyé côté client dans le
 Voit que LEAVE effectue oppération quand client dans aucun canal -> ajout condition pour fix, test passe toujours pas -> test est ptet problèmatique
 
 En profite pour rajouter condition sur len(msg) donné par readline du client pour éviter qu'essaie de lire l[0] d'une string vide, ce qui était source d'erreurs.
+
+##Travail sur NICK
+
+Passage de la gestion du NICK au départ du côté client vers le côté serveur
+Ajout d'une condition sur Nick_pending au début boucle serveur, avant les conditions sur les commandes
+
+Oublie check si nick dékà prit dans if Nick_pending
+
+Problème serveur dans tests si sys.stdin dans liste des sockets.
+Doit éventuellement redévelopper BAN et KILL

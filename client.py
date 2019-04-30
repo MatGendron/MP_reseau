@@ -96,6 +96,7 @@ liste = [s, sys.stdin]
 
 #BEGINNING
 
+"""
 nick_loop = True
 while nick_loop:
     reading, writing, exceptional = select.select(liste,[],[])
@@ -120,6 +121,7 @@ while nick_loop:
                 nick_loop = False
             else:
                 print(d)
+"""
 
 # Main loop
 while True:
@@ -130,7 +132,8 @@ while True:
             exit()
         if r!=sys.stdin:
             d=r.recv(LIMIT).decode("utf-8")
-            if d == "BYE!":
+            if d == "BYE!" or d=="You are banned from this server.":
+                print(d)
                 r.close()
                 exit()
             else:
