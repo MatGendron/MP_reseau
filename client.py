@@ -40,6 +40,7 @@ import socket
 import select
 import threading
 import sys
+import signal
 
 ####################
 # GLOBAL VARIABLES #
@@ -62,7 +63,7 @@ nick = "\n"
 
 def ERROR(s):
     print("Error : ", s)
-    exit()
+    sys.exit(0)
 
 ###################
 # PARSE ARGUMENTS #
@@ -78,10 +79,10 @@ for i in range(1,argc):
         address = (argv[i], address[1])
     elif argv[i] in ("-h", "--help"):
         print(USAGE)
-        exit()
+        sys.exit(0)
     elif argv[i] in ("-v", "--version"):
         print("Version " + VERSION)
-        exit()
+        sys.exit(0)
 
 
 ########
@@ -92,59 +93,41 @@ for i in range(1,argc):
 s = socket.socket()
 s.connect(address)
 
+##Signal_handler
+def signal_handler(sig,frame):
+    s.close()
+    sys.exit(0)
+
 liste = [s, sys.stdin]
-
-#BEGINNING
-
-"""
-nick_loop = True
-while nick_loop:
-    reading, writing, exceptional = select.select(liste,[],[])
-    for r in reading:
-        if r!=sys.stdin:
-            d=r.recv(LIMIT).decode("utf-8")
-            if d in ("Nick?", "Nickname already taken."):
-                if d != "Nick?":
-                    print(d)
-                print("Specify nickname.")
-                nick = "\n"
-                while nick == "\n":
-                    nick=input()
-                nick = "NICK " + nick
-                s.send(nick.encode("utf-8"))
-            elif d=="You are banned from this server.":
-                print(d)
-                r.close()
-                exit()
-            elif d[:4] == "List":
-                print(d)
-                nick_loop = False
-            else:
-                print(d)
-"""
 
 # Main loop
 while True:
+    signal.signal(signal.SIGINT, signal_handler)
     reading, writing, exceptional = select.select(liste,[],[])
     for r in reading:
         if r in exceptional:
             r.close()
-            exit()
-        if r!=sys.stdin:
-            d=r.recv(LIMIT).decode("utf-8")
-            if d == "BYE!" or d=="You are banned from this server.":
-                print(d)
-                r.close()
-                exit()
-            else:
-                print(d)
-        else:
+            sys.exit(0)
+        if r==sys.stdin:
             msg=r.readline()
-            if len(msg)>0 and msg[0]=='/':
-                msg=msg[1:-1]+" \n"
+            if len(msg)>0:
+                if msg[0]=='/':
+                    msg=msg[1:-1]+" \n"
+                else:
+                    msg="PRINT "+msg
+                s.send(msg.encode("utf-8"))
             else:
-                msg="PRINT "+msg
-            s.send(msg.encode("utf-8"))
+                r.close()
+                s.close()
+                sys.exit(0)
+        else:
+            d=r.recv(LIMIT).decode("utf-8")
+            if d == "":
+                print("Disconnected.")
+                r.close()
+                sys.exit(0)
+            else:
+                print(d)
 
 
 """

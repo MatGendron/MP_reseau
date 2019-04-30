@@ -147,7 +147,7 @@ Reprise du code pour le /MSG de la V0 -> petit problèmes pour construire liste 
 
 Ajout tag à l'aide de git sur le commit de la V0 finie.
 
-##KILL et BAN
+### KILL et BAN
 
 Problème avec BAN : peut pas tester maintenant parce que peut pas utiliser couple (IP,port) récupéré à l'aide de socket.getpeernam() mais le port de connexion changeant à chaque appel du programme client.py, cette méthode n'est pas utilie, il faudrait donc faire un ban uniquement sur l'adresse IP elle-même mais dans notre environnement cela empêcherait toute nouvelle connexion.
 
@@ -156,13 +156,13 @@ Tout semble fonctionner correctement.
 
 Ai juste eu à mettre condition sur message de BAN envoyé côté client dans le loop du Nickname
 
-##FIX LEAVE pour test sur KICK
+### FIX LEAVE pour test sur KICK
 
 Voit que LEAVE effectue oppération quand client dans aucun canal -> ajout condition pour fix, test passe toujours pas -> test est ptet problèmatique
 
 En profite pour rajouter condition sur len(msg) donné par readline du client pour éviter qu'essaie de lire l[0] d'une string vide, ce qui était source d'erreurs.
 
-##Travail sur NICK
+### Travail sur NICK
 
 Passage de la gestion du NICK au départ du côté client vers le côté serveur
 Ajout d'une condition sur Nick_pending au début boucle serveur, avant les conditions sur les commandes
@@ -171,3 +171,10 @@ Oublie check si nick dékà prit dans if Nick_pending
 
 Problème serveur dans tests si sys.stdin dans liste des sockets.
 Doit éventuellement redévelopper BAN et KILL
+
+### Problème KICK
+
+Diificulté à trouver d'où vient problème dans le test, Texte du test semble OK, KICK se comporte bien 
+Problème avec WHO ?
+
+En printant les listes d'utilisateurs, constate pas d'anomalies, sait toujours pas où est le pb

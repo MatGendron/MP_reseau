@@ -8,6 +8,7 @@ import socket
 import select
 import threading
 import sys
+import signal
 
 ####################
 # GLOBAL VARIABLES #
@@ -29,7 +30,7 @@ verbose=False
 
 def ERROR(s):
     print("Error : ", s)
-    exit()
+    sys.exit(0)
 
 ###################
 # PARSE ARGUMENTS #
@@ -43,10 +44,10 @@ for i in range(1,argc):
         verbose=True
     elif argv[i] in ("-h", "--help"):
         print(USAGE)
-        exit()
+        sys.exit(0)
     elif argv[i] in ("-v", "--version"):
         print("Version " + VERSION)
-        exit()
+        sys.exit(0)
 
 
 ########
@@ -58,7 +59,7 @@ s.setsockopt(socket.SOL_SOCKET,socket.SO_REUSEADDR,1)
 s.bind(('',1459))
 s.listen(1)
 ##List of server and clients sockets
-lsock=[s]
+lsock=[s,sys.stdin]
 ##Dictionnary of chat channels
 lchan={}
 ##Dictionnary of all clients
@@ -96,8 +97,17 @@ def current_cnl(sock):
         if sock in lchan[chan]:
             return chan
     return ""
+
+##Signal_handler
+def signal_handler(sig,frame):
+    for clt in lclt:
+        clt.close()
+    s.close()
+    sys.exit(0)
+
         
 while 1<2:
+    signal.signal(signal.SIGINT, signal_handler)
     reading,writing,exceptional=select.select(lsock,[],lsock)
     for i in reading:
         if i==s:
@@ -112,7 +122,7 @@ while 1<2:
                 news.close()
         elif i==sys.stdin:
             line=i.readline()
-            if line[0]=='/':
+            if len(line) >0 and line[0]=='/':
                 line=line[1:-1]+" \n"
                 command,argument=line.split(" ", 1)
                 command=command.rstrip(' \n')
@@ -129,7 +139,6 @@ while 1<2:
                         if lclt[clt]==argument:
                             sock_kill=clt
                             break
-                    sock_kill.send("BYE!".encode("utf-8"))
                     leave_msg="{0} IS DED!".format(lclt[sock_kill])
                     sock_kill.close()
                     lsock.remove(sock_kill)
@@ -143,7 +152,6 @@ while 1<2:
                             break
                     ip_ban,port_ban=sock_ban.getpeername()
                     lban.append(ip_ban)
-                    sock_ban.send("BYE!".encode("utf-8"))
                     leave_msg="{0} HAS BEEN FORSAKEN!".format(lclt[sock_ban])
                     sock_ban.close()
                     lsock.remove(sock_ban)
@@ -172,7 +180,16 @@ while 1<2:
             ##print(command)
             ##print(argument)
             ##Code for sending messages in a channel, no command on the client's side
-            if lclt[i]=="*Nick_pending*":
+            if command == "BYE":
+                if in_a_cnl(i):
+                    i.send("Use /LEAVE command to leave your current channel before disconnecting from the server.".encode("utf-8"))
+                else:
+                    leave_msg="BYE {0}!".format(lclt[i])
+                    i.close()
+                    lsock.remove(i)
+                    lclt.pop(i)
+                    send_all(lsock,s,i,leave_msg)
+            elif lclt[i]=="*Nick_pending*":
                 if command=="PRINT" and argument!="" and argument != "*Nick_pending*":
                     bad_nick=False
                     for clt in lclt:
@@ -216,13 +233,16 @@ while 1<2:
                         break
             ##Code for LIST feature: listing channels
             elif command == "WHO":
-                for k in lchan:
-                    if i in lchan[k]:
-                        for r in lchan[k]:
-                            if r==lcnlusr[k][0]:
-                                i.send("@{0}@\n".format(lchan[k][r]).encode("utf-8"))
-                            else:
-                                i.send("{0}\n".format(lchan[k][r]).encode("utf-8"))
+                if in_a_cnl(i):
+                    for k in lchan:
+                        if i in lchan[k]:
+                            for r in lchan[k]:
+                                if r==lcnlusr[k][0]:
+                                    i.send("@{0}@\n".format(lchan[k][r]).encode("utf-8"))
+                                else:
+                                    i.send("{0}\n".format(lchan[k][r]).encode("utf-8"))
+                else: 
+                    i.send("You are not in a channel.".encode("utf-8"))
             ##Code for LIST feature: displaying the list of channels
             elif command == "LIST":
                 i.send("List of channels:\n".encode("utf-8"))
@@ -291,12 +311,18 @@ while 1<2:
                     chan=current_cnl(i)
                     if chan!="":
                         if i==lcnlusr[chan][0]:
+                            print(lcnlusr[chan])
+                            print(lchan[chan])
                             for clt in lchan[chan]:
                                 if lchan[chan][clt]==argument:
+                                    print(clt)
                                     lchan[chan].pop(clt)
                                     lcnlusr[chan].remove(clt)
+                                    send_cnl(lchan[chan],0,"{0} has been kicked.".format(argument))
                                     clt.send("Kicked from {0} by admin.".format(chan).encode("utf-8"))
                                     break
+                            print(lcnlusr[chan])
+                            print(lchan[chan])
                         else:
                             i.send("Error: This is an admin command.".encode("utf-8"))
                     else:
