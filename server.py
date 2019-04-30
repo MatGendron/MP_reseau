@@ -249,14 +249,17 @@ while 1<2:
                         send_cnl(lchan[argument],i,"JOIN {0} {1}".format(argument,lclt[i]))
             ##Code fo LEAVE feature: leaving a channel
             elif command == "LEAVE":
-                for k in lchan:
-                    if i in lchan[k]:
-                        lchan[k].pop(i)
-                        lcnlusr[k].remove(i)
-                        if len(lcnlusr[k])==0:
-                            lchan.pop(k)
-                        break
-                i.send("Use /JOIN command to join another channel or /BYE command to disconnect from the server.".encode("utf-8"))
+                if in_a_cnl(i):
+                    for k in lchan:
+                        if i in lchan[k]:
+                            lchan[k].pop(i)
+                            lcnlusr[k].remove(i)
+                            if len(lcnlusr[k])==0:
+                                lchan.pop(k)
+                            break
+                    i.send("Use /JOIN command to join another channel or /BYE command to disconnect from the server.".encode("utf-8"))
+                else:
+                    i.send("Error: You are not in any channel.".encode("utf-8"))
             ##Code for BUY feature: disconnecting from the server.
             elif command == "BYE":
                 if in_a_cnl(i):

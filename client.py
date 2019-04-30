@@ -137,7 +137,7 @@ while True:
                 print(d)
         else:
             msg=r.readline()
-            if msg[0]=='/':
+            if len(msg)>0 and msg[0]=='/':
                 msg=msg[1:-1]+" \n"
             else:
                 msg="PRINT "+msg

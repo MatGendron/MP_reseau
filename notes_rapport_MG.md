@@ -155,3 +155,9 @@ Finit implémentation, BAN sur adresse IP donc intestable correctement ici
 Tout semble fonctionner correctement.
 
 Ai juste eu à mettre condition sur message de BAN envoyé côté client dans le loop du Nickname
+
+##FIX LEAVE pour test sur KICK
+
+Voit que LEAVE effectue oppération quand client dans aucun canal -> ajout condition pour fix, test passe toujours pas -> test est ptet problèmatique
+
+En profite pour rajouter condition sur len(msg) donné par readline du client pour éviter qu'essaie de lire l[0] d'une string vide, ce qui était source d'erreurs.
